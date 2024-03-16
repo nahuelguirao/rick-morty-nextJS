@@ -5,6 +5,11 @@
     margin: 50px auto;
 }
 
+.mainCharactersFilterByName {
+    padding: 0 30px;
+    margin-bottom: 30px;
+}
+
 .mainCharactersActualPage {
     text-align: center;
     margin-bottom: 30px;
@@ -67,6 +72,13 @@
     grid-column: 1/4;
 }
 
+.mainCharactersNotResultsP {
+    margin-top: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+}
 
 @media (min-width: 700px) {
     .mainCharactersContainer {

@@ -1,10 +1,12 @@
 import { ChangeEvent, useEffect, useState } from "react";
+import { useDebounce } from "./useDebounce";
 import { fetchMainPagination } from "@/helpers/fetching/fetchMainPagination";
 import { verificatePaginationSize } from "@/helpers/verifications";
 import { APIResults } from "@/types/types";
 
 export function useMainPagination() {
-  // IsLoading, Data, Actual Page, PagitationSize states
+  // IsLoading, Data, Actual Page, PagitationSize and filter states
+  const [filterByName, setFilterByName] = useState<string | undefined>("");
   const [data, setData] = useState<APIResults>();
   const [actualPage, setActualPage] = useState<number>(1);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -14,7 +16,7 @@ export function useMainPagination() {
   const fetchInitialData = async () => {
     setIsLoading(true);
     try {
-      const result = await fetchMainPagination(actualPage);
+      const result = await fetchMainPagination(actualPage, filterByName);
       setData(result);
     } catch (error) {
       console.error(error);
@@ -34,14 +36,30 @@ export function useMainPagination() {
     setPaginationSize(verificatePaginationSize());
   }, []);
 
-  //Executes fetch data each time actualPage change
+  useEffect(() => {
+    if (actualPage > 1) {
+      setActualPage(1);
+    }
+  }, [filterByName]);
+
+  //Debounce 500ms delay filterbyname
+  const filterByNameDebounced = useDebounce(filterByName);
+
+  //Executes fetch data each time actualPage || filteredByNameDebounced change
   useEffect(() => {
     window.scrollTo({
       top: 0,
       behavior: "smooth",
     });
     fetchInitialData();
-  }, [actualPage]);
+  }, [actualPage, filterByNameDebounced]);
 
-  return { data, actualPage, isLoading, paginationSize, handlePageChange };
+  return {
+    data,
+    actualPage,
+    isLoading,
+    paginationSize,
+    handlePageChange,
+    setFilterByName,
+  };
 }
